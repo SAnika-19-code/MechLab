@@ -1,0 +1,49 @@
+.cards{
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-evenly;
+}
+
+
+a{
+    color: inherit;
+    text-decoration: none;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent; 
+}
+
+.card{
+    display: grid;
+    grid-template-rows: 1fr 2fr 3fr;
+    border: 1px solid black;
+    width: 43vw;
+    height: 30vh;
+}
+
+.exp-number{
+    height: 5vh;
+    padding: 1vw 0;
+    margin: 0;
+    width: 100%;
+    height: 80%;
+    color: white;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25em;
+}
+
+.exp-aim{
+    font-size: 1.08em;
+    font-weight: bold;
+}
+
+
+.card:active{
+    transform: scale(1.03);
+    background-color:antiquewhite;
+    color: inherit;
+    text-decoration: none;
+}

@@ -1,0 +1,251 @@
+body{
+    font-size: 14px;
+    background-color:#ebe7df ;
+    margin: 0;
+}
+
+.nav-bar{
+    display: grid;
+    grid-template-columns: 1fr 8fr 1fr;
+    gap: 20px;
+    width: 90vw;
+    margin:2vh 0 6vh;
+    position: relative;
+    z-index: 10;
+}
+
+.gradient-text {
+    background: linear-gradient(to right, #cb844d, #ffcd83, #b06d39);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.nav-bar span{
+    font-size: 1.8rem;
+}
+
+#title{
+    font-size: 1.5rem;
+    margin: 0;
+}
+
+.menu{
+    justify-self: end;
+}
+
+
+.hero-section {
+    position: relative;
+    background-image: url('../Media/BG1.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    height: 50vh; 
+    color: white;
+    padding: 5% 2vw 140px; /* Bottom padding for the wave graphic */
+    display: flex;
+    align-items: start;
+}
+
+
+.hero-overlay {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: linear-gradient(180deg, rgba(11, 20, 36, 0.4) 0%, rgba(11, 20, 36, 0.85) 100%);
+    z-index: 1;
+}
+
+
+.hero-content {
+    position: relative;
+    z-index: 10; /* Keeps text above the dark overlay */
+    width: 70%;
+    padding-left: 4vw;
+}
+
+.hero-content h1 {
+    font-size: 2.6rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.gold{
+    color: #f0b966;
+}
+
+.hero-content p:first-of-type {
+    font-size: 1.1em;
+    font-weight: 540;
+    font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    word-spacing: 5px;
+}
+
+.hero-content hr{
+    margin: 3vh 0;
+    width:40%;
+    height: 1px;
+}
+
+#desc{
+    font-size: 1em;
+    font-weight: 500;
+    color: #dbe3ef;
+    font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    margin-top: 3vh;
+}
+
+.btn button{
+    display: flex;
+    justify-items: center;
+    align-items: center;
+    justify-content: start;
+    border-radius: 15px;
+    margin: 5vh -1vh 0;
+    background-color: #f0b966;
+    border: #e5ac56 1px solid;
+    font-size: 1.2em;
+    font-weight: bold;
+    padding: 5px 8px;
+}
+
+.btn span{
+    margin-left: 5px;
+}
+
+
+/* the Layered Wave Element */
+.wave-container {
+    position: absolute;
+    bottom: -1px; /* Prevents 1px line rendering gaps on high-res mobile screens */
+    left: 0;
+    width: 100%;
+    overflow: hidden;
+    line-height: 0;
+    z-index: 3; /* Places it infront of the bg */
+}
+
+.wave-container svg {
+    position: relative;
+    display: block;
+    width: 100%;
+    height: 70px; /* Controls how deep the wave dips */
+}
+
+.wave-gold-line {
+    fill: #e5ac56;
+}
+
+.wave-bottom-fill {
+    fill: #ebe7df;
+}
+
+
+
+.bottom{
+    display: grid;
+    margin: auto;
+    width: 90%;
+    grid-template-columns: repeat(3,1fr);
+    grid-template-rows: 1fr 1fr;
+    column-gap: 10px;
+    justify-items: center;
+    align-items: center;
+    text-align: center;
+    margin-top: 4vh;
+    font-size: 1.2em;
+}
+
+
+a{
+    color: inherit;
+    text-decoration: none;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent; 
+}
+
+
+
+
+
+
+
+.menu-toggle-open, .menu-toggle-close {
+    background: none;
+    border: none;
+    color: #fff;
+}
+
+.nav-drawer {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 50%;
+    height: 100vh;
+    background-image: linear-gradient(180deg, rgba(11, 20, 36, 0.633) 0%, rgba(11, 20, 36, 0.85) 100%),url('../Media/BG2.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    border: 1px solid #e5ac56; 
+    border-right: none;
+    padding: 3vh;
+    display: flex;
+    flex-direction: column;
+    z-index: 100;
+    transform: translateX(100%); 
+    transition: transform 0.3s ease-in-out; 
+}
+
+.menu-toggle-close {
+    align-self: flex-end;
+    font-size: 1.5rem;
+    margin-bottom: 4vh;
+    background: linear-gradient(180deg, rgba(11, 20, 36, 0.874) 0%, rgba(11, 20, 36, 0.956) 100%);
+    border-radius: 50%;
+    border: #e5ac56 0.5px dashed;
+}
+
+.nav-links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.nav-links li {
+    margin: 3vh 0;
+}
+
+.nav-links a {
+    color: #fff;
+    text-decoration: none;
+    font-size: 1.3rem;
+    font-weight: 500;
+    letter-spacing: 1px;
+    transition: color 0.2s;
+}
+
+.nav-links a:hover {
+    color: #e5ac56; 
+}
+
+.drawer-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    backdrop-filter: blur(1px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    z-index: 99;
+}
+
+.nav-drawer.open {
+    transform: translateX(0);
+}
+
+.drawer-overlay.open {
+    opacity: 1;
+    pointer-events: auto;
+}

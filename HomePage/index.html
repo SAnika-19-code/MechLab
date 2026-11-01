@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MechLAB</title>
+    <link rel="stylesheet" type="text/css" media="screen" href="./stylesIndex.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Sedan+SC&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet" />
+</head>
+<body>
+
+    <section class="hero-section">
+        <!-- Dark tint layer to blend the image seamlessly -->
+        <div class="hero-overlay"></div>
+
+        <div class="hero-content">
+            <div class="nav-bar">
+                <span class="material-symbols-outlined gradient-text">manufacturing</span>
+                <h1 id="title" class="gradient-text">MechLAB</h1>
+                <button class="menu-toggle-open" aria-label="Open Navigation"><span class="material-symbols-outlined menu">menu</span></button>
+                <div class="nav-drawer">
+                    <button class="menu-toggle-close" aria-label="Close Navigation">✕</button>
+                    <ul class="nav-links">
+                        <li><a href="./index.html">Home</a></li>
+                        <li><a href="../Experiments/MechLab.html">Experiments</a></li>
+                        <li><a href="./about.html">About Us</a></li>
+                    </ul>
+                </div>
+                <div class="drawer-overlay"></div>
+            </div>
+            <p class="gold">VIRTUAL APPLIED MECHANICS LAB</p>
+            <hr>
+            <h1>Explore.</h1><h1>Learn. <span class="gold">Apply.</span></h1>
+            <p id="desc">Dive into interactive engineering experiments and strengthen your concepts through simulations.</p>
+            <div class="btn"><a href="../Experiments/MechLab.html">
+                <button>Explore Experiments <span class="material-symbols-outlined">arrow_circle_right</span></button>
+            </a></div>
+        </div>
+
+        <!-- Double Layer SVG Wave Transition -->
+        <div class="wave-container">
+            <svg viewBox="0 0 1440 120" preserveAspectRatio="none">
+                <!-- Layer 1: The underlying gold accent band -->
+                <path class="wave-gold-line" d="M0,60 C360,130 720,20 1080,70 C1260,95 1380,85 1440,65 L1440,120 L0,120 Z"></path>
+                
+                <!-- Layer 2: The solid cream mask covering the bottom area -->
+                <path class="wave-bottom-fill" d="M0,68 C360,138 720,28 1080,78 C1260,103 1380,93 1440,73 L1440,120 L0,120 Z"></path>
+            </svg>
+        </div>
+    </section>
+
+    <section>
+        <div class="bottom">
+            <div><span class="material-symbols-outlined">live_tv</span></div>
+            <div><span class="material-symbols-outlined">monitoring</span></div>
+            <div><span class="material-symbols-outlined">science</span></div>
+            <div>Interactive Simulations</div>
+            <div>Learn at Your Pace</div>
+            <div>Build Concepts Visually</div>
+        </div>
+    </section>
+
+    
+
+
+
+    <script>
+        const openBtn = document.querySelector('.menu-toggle-open');
+        const closeBtn = document.querySelector('.menu-toggle-close');
+        const drawer = document.querySelector('.nav-drawer');
+        const overlay = document.querySelector('.drawer-overlay');
+        function toggleMenu() {
+            drawer.classList.toggle('open');
+            overlay.classList.toggle('open');
+        }
+        // Click events
+        openBtn.addEventListener('click', toggleMenu);
+        closeBtn.addEventListener('click', toggleMenu);
+        overlay.addEventListener('click', toggleMenu);
+    </script>
+</body>
+</html>
