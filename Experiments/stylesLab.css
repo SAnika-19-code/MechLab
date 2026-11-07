@@ -1,8 +1,18 @@
+body{
+    font-size: 14px;
+    background-color:#f5f0e6 ;
+    font-family: Georgia, 'Times New Roman', Times, serif;
+}
+
+h1{
+    text-align: center;
+}
+
 .cards{
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-evenly;
+    display: grid;
+    justify-content: center;
+    justify-items: center;
+    row-gap: 4vh;
 }
 
 
@@ -15,29 +25,55 @@ a{
 
 .card{
     display: grid;
-    grid-template-rows: 1fr 2fr 3fr;
-    border: 1px solid black;
-    width: 43vw;
-    height: 30vh;
+    grid-template-rows: 53% 47%;
+    border: 1px solid #f0b966;
+    box-shadow: 1px 1px 3px #866a41;
+    width: 70vw;
+    height: 35vh;
+    padding: 0;
+}
+
+.exp-image{
+    position: relative;
+    width: 100%;
+    overflow: clip;
+}
+
+.apparatus{
+    object-fit: cover;
+    width: 100%;
+    object-position: center;
 }
 
 .exp-number{
-    height: 5vh;
-    padding: 1vw 0;
+    position: absolute;
+    top: 0.4rem; right: 0.5rem;
+    background-color: #ffcf87;
+    font-size: 0.8em;
+    padding: 0.1vh; 
     margin: 0;
-    width: 100%;
-    height: 80%;
-    color: white;
+    border: #f0b966 0.5px solid;
+}
 
+.exp-info{
+    background-color: #ffffff;
     display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.25em;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+}
+
+.exp-title{
+    font-size: 1.08em;
+    font-weight: bold;
+    padding: 1vh;
+    margin: 0;
 }
 
 .exp-aim{
-    font-size: 1.08em;
-    font-weight: bold;
+    font-size: 0.95em;
+    padding: 1vh;
+    padding-top: 0;
+    margin: 0;
 }
 
 

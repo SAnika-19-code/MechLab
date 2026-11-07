@@ -1,0 +1,164 @@
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 24px;
+    font-family: Arial, sans-serif;
+    background: #f1f5f9;
+    color: #172554;
+}
+
+h1 {
+    margin-top: 0;
+}
+
+.layout {
+    display: grid;
+    grid-template-columns: minmax(300px, 1.2fr) minmax(280px, 0.8fr);
+    gap: 20px;
+}
+
+.panel {
+    background: white;
+    border-radius: 14px;
+    padding: 18px;
+    box-shadow: 0 3px 14px #00000012;
+}
+
+svg {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.force-row {
+    display: grid;
+    grid-template-columns: 12px 1fr 1fr;
+    gap: 10px;
+    align-items: center;
+    margin: 14px 0;
+}
+
+.force-row input {
+    width: 100%;
+    min-width: 0;
+    padding: 9px;
+    border: 1px solid #cbd5e1;
+    border-radius: 7px;
+}
+
+button {
+    border: 0;
+    border-radius: 8px;
+    padding: 11px 16px;
+    cursor: pointer;
+    font-weight: bold;
+    margin: 5px 3px 5px 0;
+}
+
+.add {
+    background: #dbeafe;
+    color: #1d4ed8;
+}
+
+.remove {
+    background: #fee2e2;
+    color: #b91c1c;
+}
+
+.update {
+    background: #1d4ed8;
+    color: white;
+}
+
+.result {
+    margin-top: 18px;
+    padding: 15px;
+    background: #f8fafc;
+    border-radius: 9px;
+    line-height: 1.9;
+}
+
+#status {
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+@media(max-width: 750px) {
+    body {
+        padding: 12px;
+    }
+
+    .layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+
+/* Custom number controls */
+
+.number-control {
+    display: grid;
+    grid-template-columns: 32px minmax(0, 1fr) 32px;
+    align-items: center;
+    gap: 4px;
+    margin-top: 5px;
+}
+
+.number-control input {
+    width: 100%;
+    min-width: 0;
+    height: 40px;
+    text-align: center;
+    padding: 6px 2px;
+    font-size: 16px;
+}
+
+.step-btn {
+    width: 32px;
+    height: 40px;
+    padding: 0;
+    margin: 0;
+    border-radius: 7px;
+    background: #e2e8f0;
+    color: #1e293b;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    touch-action: manipulation;
+}
+
+.step-btn:active {
+    background: #bfdbfe;
+    transform: scale(0.94);
+}
+
+.step-btn{
+    display: none;
+}
+.number-control{
+    grid-template-columns: 60px;
+}
+
+@media(max-width: 750px) {
+    .force-row {
+        grid-template-columns: 12px minmax(0, 1fr) minmax(0, 1fr);
+        gap: 8px;
+    }
+
+    .number-control {
+        grid-template-columns: 30px minmax(0, 1fr) 30px;
+        gap: 3px;
+    }
+
+    .step-btn {
+        display: inline;
+        width: 30px;
+        height: 42px;
+    }
+}

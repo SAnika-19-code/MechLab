@@ -1,0 +1,100 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>MechLab - Universal Force Table</title>
+
+    <link rel="stylesheet" href="exp1.css">
+</head>
+
+<body>
+
+    <h1>Universal Force Table</h1>
+    <p>Adjust hanging weights and angles to balance the central ring.</p>
+
+    <div class="layout">
+
+        <!-- APPARATUS -->
+        <section class="panel">
+            <h2>Virtual Apparatus</h2>
+
+            <svg id="table" viewBox="0 0 600 600">
+
+                <defs>
+                    <marker id="arrow" markerWidth="8" markerHeight="8"
+                        refX="6" refY="4" orient="auto">
+                        <path d="M0 0 L8 4 L0 8 Z" fill="context-stroke"/>
+                    </marker>
+                </defs>
+
+                <circle cx="300" cy="300" r="195"
+                    fill="#e2e8f0" stroke="#475569" stroke-width="7"/>
+
+                <circle cx="300" cy="300" r="180"
+                    fill="#f8fafc" stroke="#94a3b8" stroke-width="2"/>
+
+                <!-- Reference axes -->
+                <line x1="85" y1="300" x2="515" y2="300"
+                    stroke="#94a3b8" stroke-dasharray="6 6"/>
+
+                <line x1="300" y1="85" x2="300" y2="515"
+                    stroke="#94a3b8" stroke-dasharray="6 6"/>
+
+                <!-- Degree labels -->
+                <g fill="#475569" font-size="15">
+                    <text x="300" y="105" text-anchor="middle">90°</text>
+                    <text x="495" y="290">0°</text>
+                    <text x="300" y="510" text-anchor="middle">270°</text>
+                    <text x="90" y="290">180°</text>
+                </g>
+
+                <!-- Dynamic forces -->
+                <g id="forces"></g>
+
+                <!-- Movable central ring -->
+                <g id="ringAssembly">
+                    <circle cx="300" cy="300" r="17"
+                        fill="none"
+                        stroke="#334155"
+                        stroke-width="1"/>
+
+                    <circle cx="300" cy="300" r="2"/>
+                </g>
+
+            </svg>
+        </section>
+
+        <!-- CONTROLS -->
+        <section class="panel">
+
+            <h2>Hanging Weights</h2>
+            <p>Enter mass in grams and angle in degrees.</p>
+
+            <div id="inputs"></div>
+
+            <button class="add" id="addForce">+ Add Weight</button>
+            <button class="remove" id="removeForce">− Remove Last</button>
+            <button class="update" id="calculate">Calculate Resultant</button>
+
+            <div class="result">
+                <h3>Calculated Results</h3>
+
+                <div>Horizontal component: <b id="rx">0.00 N</b></div>
+                <div>Vertical component: <b id="ry">0.00 N</b></div>
+                <div>Resultant force: <b id="r">0.00 N</b></div>
+                <div>Resultant angle: <b id="theta">—</b></div>
+
+                <p id="status">Adjust the weights to achieve equilibrium.</p>
+            </div>
+
+        </section>
+
+    </div>
+
+    <script src="exp1.js"></script>
+
+</body>
+</html>
