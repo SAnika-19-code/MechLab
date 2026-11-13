@@ -1,4 +1,3 @@
-
 const g = 9.81;
 const cx = 300;
 const cy = 300;
@@ -166,33 +165,130 @@ function drawTable() {
                 stroke="${color}" stroke-width="2.5"/>
         `;
 
-        // Pulley
+        
+        // Pulley touch area (larger than visible pulley)
         drawing.innerHTML += `
+            <circle
+                cx="${x}" cy="${y}" r="25"
+                fill="transparent"
+                class="pulley-handle"
+                data-index="${index}"
+                style="cursor:grab"
+            />
+
+            <!-- Visible pulley -->
             <circle cx="${x}" cy="${y}" r="13"
-                fill="#64748b" stroke="#334155" stroke-width="3"/>
+                fill="#64748b"
+                stroke="#334155"
+                stroke-width="3"
+                pointer-events="none"
+            />
 
             <circle cx="${x}" cy="${y}" r="4"
-                fill="#e2e8f0"/>
+                fill="#e2e8f0"
+                pointer-events="none"
+            />
         `;
+
 
         // Hanging string and weight
         drawing.innerHTML += `
             <line x1="${x}" y1="${y + 13}"
-                x2="${x}" y2="${y + 65}"
+                x2="${x}" y2="${y + 55}"
                 stroke="${color}" stroke-width="2"/>
 
-            <rect x="${x - 17}" y="${y + 65}"
-                width="34" height="28" rx="4"
+            <rect x="${x - 17}" y="${y + 55}"
+                width="40" height="30" rx="4"
                 fill="${color}" stroke="#334155" stroke-width="1.5"/>
 
-            <text x="${x}" y="${y + 83}"
-                text-anchor="middle" font-size="11"
+            <text x="${x + 1}" y="${y + 73}"
+                text-anchor="middle" font-size="13" 
                 fill="white" font-weight="bold">
                 ${force.mass}g
             </text>
         `;
     });
 }
+
+
+
+const table = document.getElementById("table");
+
+let activePulley = null;
+
+// Start dragging
+table.addEventListener("pointerdown", (e) => {
+
+    const pulley = e.target.closest(".pulley-handle");
+
+    if (!pulley) return;
+
+    activePulley = Number(pulley.dataset.index);
+
+    table.setPointerCapture(e.pointerId);
+
+    updatePulleyAngle(e);
+});
+
+// Continue dragging
+table.addEventListener("pointermove", (e) => {
+
+    if (activePulley === null) return;
+
+    updatePulleyAngle(e);
+});
+
+// Stop dragging
+table.addEventListener("pointerup", () => {
+    activePulley = null;
+});
+
+table.addEventListener("pointercancel", () => {
+    activePulley = null;
+});
+
+function updatePulleyAngle(e) {
+
+    if (activePulley === null) return;
+
+    // Convert screen coordinates into SVG coordinates
+    const point = table.createSVGPoint();
+
+    point.x = e.clientX;
+    point.y = e.clientY;
+
+    const svgPoint = point.matrixTransform(
+        table.getScreenCTM().inverse()
+    );
+
+    // Calculate angle from the centre of the table
+    const dx = svgPoint.x - cx;
+    const dy = cy - svgPoint.y;
+
+    let angle = Math.atan2(dy, dx) * 180 / Math.PI;
+
+    // Convert to 0–360 degrees
+    angle = (angle + 360) % 360;
+
+    // Update the force
+    forces[activePulley].angle =
+        Math.round(angle * 10) / 10;
+
+    // Update the angle input in the control panel
+    const angleInput = inputs.querySelector(
+        `input[data-index="${activePulley}"][data-field="angle"]`
+    );
+
+    if (angleInput) {
+        angleInput.value = forces[activePulley].angle;
+    }
+
+    // Recalculate and redraw
+    calculate();
+}
+
+
+
 
 // Calculate forces using T = mg
 function calculate() {
@@ -225,7 +321,7 @@ function calculate() {
     document.getElementById("theta").textContent =
         resultant < 0.01 ? "Undefined" : angle.toFixed(2) + "°";
 
-    const balanced = resultant < 0.05;
+    const balanced = resultant < 0.06;
 
     const status = document.getElementById("status");
 
@@ -236,9 +332,8 @@ function calculate() {
     status.style.color = balanced ? "#15803d" : "#dc2626";
 
     // Physical movement boundary
-    const tableInnerRadius = 180;
     const ringRadius = 17;
-    const safetyMargin = 5;
+    const safetyMargin = 2;
 
     const maxMovement = ringRadius - safetyMargin;
 
