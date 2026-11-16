@@ -207,3 +207,83 @@ button {
 .pulley-handle:active {
     cursor: grabbing;
 }
+
+
+
+
+
+
+
+
+
+
+
+/* Diagram Layout & SVG Graph Styling */
+
+.diagram-svg {
+    width: 95%;
+    max-width: 500px;
+    height: auto;
+    border: 1px solid #cbd5e1;
+    border-radius: 10px;
+    background: #ffffff;
+}
+
+.grid-minor {
+    stroke: #cbd5e1;
+    stroke-width: 1;
+}
+
+.grid-major {
+    stroke: #cbd5e1;
+    stroke-width: 1;
+}
+
+.axis-line {
+    stroke: #64748b;
+    stroke-width: 1.5;
+}
+
+.origin-dot {
+    fill: #334155;
+}
+
+.axis-label {
+    font-size: 12px;
+    font-weight: bold;
+    fill: #475569;
+}
+
+.tick-label {
+    font-size: 12px;
+    fill: #64748b;
+}
+
+.scale-label {
+    font-size: 14px;
+    font-weight: bold;
+    fill: #334155;
+}
+
+.vector-line {
+    stroke-width: 2;
+    stroke-linecap: round;
+}
+
+.resultant-line {
+    stroke: #0f172a;
+    stroke-width: 2;
+    stroke-dasharray: 4, 3;
+}
+
+.vector-text {
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.vector-text, .tick-label {
+    paint-order: stroke;
+    stroke: #ffffff;
+    stroke-width: 3px;
+    stroke-linejoin: round;
+}

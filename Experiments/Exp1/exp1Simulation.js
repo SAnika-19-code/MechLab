@@ -362,6 +362,7 @@ function calculate() {
         );
 
     drawTable();
+    drawDiagrams(rx,ry,resultant);
 }
 
 // Add a new force
@@ -396,3 +397,160 @@ document.getElementById("calculate").addEventListener("click", calculate);
 // Initial rendering
 renderInputs();
 calculate();
+
+
+
+function getNiceScale(rawNPerGrid) {
+    const niceSteps = [0.05, 0.1, 0.2, 0.25, 0.5, 1, 1.5, 2, 2.5, 3, 4, 5, 10, 20, 25, 50];
+    return niceSteps.find(step => step >= rawNPerGrid) || Math.ceil(rawNPerGrid);
+}
+
+// Builds dynamic axis tick numbers and scale legend
+function buildDynamicAxes(size, mid, gridPx, scaleNPerGrid) {
+    let html = "";
+
+    for (let pos = 50; pos < size - 25; pos += 50) {
+        if (pos === mid) continue;
+        const boxCount = Math.round((pos - mid) / gridPx);
+        const xVal = (boxCount * scaleNPerGrid).toFixed(scaleNPerGrid < 1 ? 1 : 0);
+        const yVal = (-boxCount * scaleNPerGrid).toFixed(scaleNPerGrid < 1 ? 1 : 0);
+
+        html += `<text x="${pos}" y="${mid + 14}" text-anchor="middle" class="tick-label">${xVal}</text>`;
+        html += `<text x="${mid - 6}" y="${pos + 3}" text-anchor="end" class="tick-label">${yVal}</text>`;
+    }
+
+    html += `
+        <text x="12" y="${size - 12}" class="scale-label">
+            Scale: 1 box = ${scaleNPerGrid} N (20×20 grid)
+        </text>
+    `;
+    return html;
+}
+
+function drawDiagrams(rx, ry, resultant) {
+    const spaceLayer = document.getElementById("space-dynamic-layer");
+    const vectorLayer = document.getElementById("vector-dynamic-layer");
+
+    if (!spaceLayer || !vectorLayer) return;
+
+    const size = 500;
+    const mid = 250;
+    const gridPx = 25;
+    const maxRadiusPx = mid - 30;
+
+    let maxSpaceForce = 0.1;
+    let maxPolygonReach = 0.1;
+    let simX = 0;
+    let simY = 0;
+
+    forces.forEach(force => {
+        const tension = (force.mass / 1000) * g;
+        if (tension > maxSpaceForce) maxSpaceForce = tension;
+
+        const rad = radians(force.angle);
+        simX += tension * Math.cos(rad);
+        simY += tension * Math.sin(rad);
+
+        const distFromOrigin = Math.sqrt(simX * simX + simY * simY);
+        if (distFromOrigin > maxPolygonReach) maxPolygonReach = distFromOrigin;
+    });
+
+    const overallMaxN = Math.max(maxSpaceForce, maxPolygonReach);
+    const cleanNPerGrid = getNiceScale(overallMaxN / (maxRadiusPx / gridPx));
+    const unifiedPxPerN = gridPx / cleanNPerGrid;
+
+    const axesHTML = buildDynamicAxes(size, mid, gridPx, cleanNPerGrid);
+    let spaceHTML = axesHTML;
+    let vectorHTML = axesHTML;
+
+    // 1. SPACE DIAGRAM (With horizontal-axis collision avoidance)
+    forces.forEach((force, index) => {
+        const tension = (force.mass / 1000) * g;
+        if (tension <= 0) return;
+
+        const rad = radians(force.angle);
+        const endX = mid + (tension * Math.cos(rad)) * unifiedPxPerN;
+        const endY = mid - (tension * Math.sin(rad)) * unifiedPxPerN;
+
+        let labelX = mid + ((tension * unifiedPxPerN) + 22) * Math.cos(rad);
+        let labelY = mid - ((tension * unifiedPxPerN) + 22) * Math.sin(rad);
+
+        // If vector lies flat along the X-axis (near 0° or 180°), shift label above the axis
+        if (Math.abs(Math.sin(rad)) < 0.15) {
+            labelY -= 14;
+        }
+
+        labelX=Math.max(55,Math.min(size-55,labelX));
+
+        spaceHTML += `
+            <line x1="${mid}" y1="${mid}" x2="${endX}" y2="${endY}"
+                  stroke="${colors[index]}" class="vector-line"
+                  marker-end="url(#arrow-space-${index})" />
+            <text x="${labelX}" y="${labelY}" text-anchor="middle" dominant-baseline="middle"
+                  fill="${colors[index]}" class="vector-text">
+                F${index + 1} (${tension.toFixed(2)}N)
+            </text>
+        `;
+    });
+
+    // 2. VECTOR DIAGRAM
+    let currX = mid;
+    let currY = mid;
+
+    forces.forEach((force, index) => {
+        const tension = (force.mass / 1000) * g;
+        if (tension <= 0) return;
+
+        const rad = radians(force.angle);
+        const nextX = currX + (tension * Math.cos(rad)) * unifiedPxPerN;
+        const nextY = currY - (tension * Math.sin(rad)) * unifiedPxPerN;
+
+        let midX=(currX +nextX)/2+8;
+        let midY=(currY +nextY)/2-8;
+
+        //Lift label, if it is on X-axis
+        if (Math.abs(currY - mid) < 5 && Math.abs(nextY - mid) < 5) {
+            midY -= 6;
+        }
+
+
+        vectorHTML += `
+            <line x1="${currX}" y1="${currY}" x2="${nextX}" y2="${nextY}"
+                  stroke="${colors[index]}" class="vector-line"
+                  marker-end="url(#arrow-vector-${index})" />
+            <text x="${midX}" y="${midY}" fill="${colors[index]}" class="vector-text">
+                F${index + 1}
+            </text>
+        `;
+
+        currX = nextX;
+        currY = nextY;
+    });
+
+    if (resultant >= 0.06) {
+
+        const resAngle = Math.atan2(ry, rx);
+        const rLabelX = currX + 24 * Math.cos(resAngle);
+        const rLabelY = currY - 24 * Math.sin(resAngle);
+
+        vectorHTML += `
+            <line x1="${mid}" y1="${mid}" x2="${currX}" y2="${currY}"
+                  class="resultant-line" marker-end="url(#arrow-resultant)" />
+            <text x="${rLabelX}" y="${rLabelY}" text-anchor="middle" dominant-baseline="middle"
+                  fill="#0f172a" class="vector-text">
+                R = ${resultant.toFixed(2)}N
+            </text>
+        `;
+
+    } else {
+        vectorHTML += `
+            <circle cx="${mid}" cy="${mid}" r="2.5" fill="#15803d" />
+            <text x="${size - 12}" y="${size - 12}" text-anchor="end" fill="#15803d" class="vector-text">
+                ✓ Closed Polygon (Equilibrium)
+            </text>
+        `;
+    }
+
+    spaceLayer.innerHTML = spaceHTML;
+    vectorLayer.innerHTML = vectorHTML;
+}

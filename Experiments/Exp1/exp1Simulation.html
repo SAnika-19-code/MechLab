@@ -78,6 +78,80 @@
                 <p id="status">Adjust the weights to achieve equilibrium.</p>
             </div>
         </section>
+
+        <div class="panel">
+            <h3>Space Diagram (Concurrent Forces)</h3>
+            <svg id="space-diagram" class="diagram-svg" viewBox="0 0 500 500">
+            <defs>
+                <!-- 25px minor grid + 50px major grid pattern -->
+                <pattern id="minor-grid-space" width="25" height="25" patternUnits="userSpaceOnUse">
+                <path d="M 25 0 L 0 0 0 25" fill="none" class="grid-minor" />
+                </pattern>
+                <pattern id="major-grid-space" width="50" height="50" patternUnits="userSpaceOnUse">
+                <rect width="50" height="50" fill="url(#minor-grid-space)" />
+                <path d="M 50 0 L 0 0 0 50" fill="none" class="grid-major" />
+                </pattern>
+
+                <!-- Colored Arrow Markers -->
+                <marker id="arrow-space-0" markerWidth="5" markerHeight="5" refX="4.5" refY="2.5" orient="auto"><path d="M0,0.5 L0,4.5 L5,2.5 z" fill="#2563eb" /></marker>
+                <marker id="arrow-space-1" markerWidth="5" markerHeight="5" refX="4.5" refY="2.5" orient="auto"><path d="M0,0.5 L0,4.5 L5,2.5 z" fill="#dc2626" /></marker>
+                <marker id="arrow-space-2" markerWidth="5" markerHeight="5" refX="4.5" refY="2.5" orient="auto"><path d="M0,0.5 L0,4.5 L5,2.5 z" fill="#16a34a" /></marker>
+                <marker id="arrow-space-3" markerWidth="5" markerHeight="5" refX="4.5" refY="2.5" orient="auto"><path d="M0,0.5 L0,4.5 L5,2.5 z" fill="#9333ea" /></marker>
+                <marker id="arrow-space-4" markerWidth="5" markerHeight="5" refX="4.5" refY="2.5" orient="auto"><path d="M0,0.5 L0,4.5 L5,2.5 z" fill="#ea580c" /></marker>
+                <marker id="arrow-space-5" markerWidth="5" markerHeight="5" refX="4.5" refY="2.5" orient="auto"><path d="M0,0.5 L0,4.5 L5,2.5 z" fill="#0891b2" /></marker>
+                <marker id="arrow-space-6" markerWidth="5" markerHeight="5" refX="4.5" refY="2.5" orient="auto"><path d="M0,0.5 L0,4.5 L5,2.5 z" fill="#be185d" /></marker>
+            </defs>
+
+            <!-- Background Graph Paper -->
+            <rect width="500" height="500" fill="url(#major-grid-space)" />
+
+            <!-- Main X and Y Axes -->
+            <line x1="0" y1="250" x2="500" y2="250" class="axis-line" />
+            <line x1="250" y1="0" x2="250" y2="500" class="axis-line" />
+            <circle cx="250" cy="250" r="3" class="origin-dot" />
+            <text x="476" y="242" class="axis-label">+X</text>
+            <text x="258" y="16" class="axis-label">+Y</text>
+
+            <!-- Dynamic Layer Updated by JS -->
+            <g id="space-dynamic-layer"></g>
+            </svg>
+        </div>
+
+        <div class="panel">
+            <h3>Vector Diagram (Head-to-Tail Polygon)</h3>
+            <svg id="vector-diagram" class="diagram-svg" viewBox="0 0 500 500">
+            <defs>
+                <pattern id="minor-grid-vector" width="25" height="25" patternUnits="userSpaceOnUse">
+                <path d="M 25 0 L 0 0 0 25" fill="none" class="grid-minor" />
+                </pattern>
+                <pattern id="major-grid-vector" width="50" height="50" patternUnits="userSpaceOnUse">
+                <rect width="50" height="50" fill="url(#minor-grid-vector)" />
+                <path d="M 50 0 L 0 0 0 50" fill="none" class="grid-major" />
+                </pattern>
+
+                <marker id="arrow-vector-0" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#2563eb" /></marker>
+                <marker id="arrow-vector-1" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#dc2626" /></marker>
+                <marker id="arrow-vector-2" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#16a34a" /></marker>
+                <marker id="arrow-vector-3" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#9333ea" /></marker>
+                <marker id="arrow-vector-4" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#ea580c" /></marker>
+                <marker id="arrow-vector-5" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#0891b2" /></marker>
+                <marker id="arrow-vector-6" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#be185d" /></marker>
+                <marker id="arrow-resultant" markerWidth="9" markerHeight="9" refX="8" refY="3.5" orient="auto"><path d="M0,0 L0,7 L9,3.5 z" fill="#0f172a" /></marker>
+            </defs>
+
+            <rect width="500" height="500" fill="url(#major-grid-vector)" />
+
+            <line x1="0" y1="250" x2="500" y2="250" class="axis-line" />
+            <line x1="250" y1="0" x2="250" y2="500" class="axis-line" />
+            <circle cx="250" cy="250" r="3" class="origin-dot" />
+            <text x="476" y="242" class="axis-label">+X</text>
+            <text x="258" y="16" class="axis-label">+Y</text>
+
+            <!-- Dynamic Layer Updated by JS -->
+            <g id="vector-dynamic-layer"></g>
+            </svg>
+        </div>
+
     </div>
 
     <script src="exp1Simulation.js"></script>
