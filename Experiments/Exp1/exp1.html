@@ -3,9 +3,417 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Experiment 1 - Universal Force Table Observation Sheet</title>
+    <!-- Reuse diagram SVG styles so saved graphs render identically -->
+    <link rel="stylesheet" href="./exp1Simulation.css">
+    <link rel="stylesheet" href="./exp1.css">
 </head>
 <body>
-    <a href="exp1Simulation.html"><button>live Simulator</button></a>
+
+    <!-- Practical Details Section -->
+    <section class="lab-header-card">
+        <div class="lab-meta">
+            <span>Course Code: ESC2101P04</span>
+            <span>Experiment No. 01</span>
+        </div>
+        <h1>Verification of Law of Polygon of Forces</h1>
+
+        <div class="accordion-group">
+            <details class="lab-section" open>
+                <summary>1. Aim & Theory</summary>
+                <div class="lab-content">
+                    <p style="margin-top:0;"><b>Aim:</b> To verify graphically and analytically the equilibrium of a particle using the Law of Polygon of Forces.</p>
+                    <div class="theory-quote">
+                        "If a number of concurrent forces are acting simultaneously on a body or a particle, and are represented in magnitude and direction by the sides of a polygon taken in order, then their resultant is represented in magnitude and direction by the closing side of the polygon taken in opposite order."
+                    </div>
+                    <p style="margin-bottom: 0;">When a particle subjected to multiple concurrent forces is in static equilibrium, the resultant force is zero (&Sigma;F<sub>x</sub> = 0, &Sigma;F<sub>y</sub> = 0), forming a <b>closed force polygon</b>. Any non-zero gap is recorded as the <b>error of closure</b>, R.</p>
+                </div>
+            </details>
+
+            <details class="lab-section">
+                <summary>2. Pre-requisites & Apparatus</summary>
+                <div class="lab-content">
+                    <p style="margin-top:0;"><b>Pre-requisites:</b></p>
+                    <ul style="margin-bottom: 10px;">
+                        <li>Concept of concurrent coplanar force systems and static equilibrium.</li>
+                        <li>Resolution of forces into orthogonal components <i>F</i><sub>x</sub> = <i>F</i> cos &theta; and <i>F</i><sub>y</sub> = <i>F</i> sin &theta;.</li>
+                        <li>Graphical vector addition using the head-to-tail polygon method.</li>
+                    </ul>
+                    <p style="margin:0;"><b>Apparatus:</b> Universal Force Table, slotted weights with hangers/pans, frictionless pulleys, inextensible threads, central ring, white drawing sheet, and spirit level.</p>
+                </div>
+            </details>
+
+            <details class="lab-section">
+                <summary>3. Procedure (Lab & Virtual Simulation)</summary>
+                <div class="lab-content">
+                    <ol>
+                        <li>Level the Universal Force Table using a spirit level and fix the pulleys along the graduated circular rim at desired angles &theta;1, &theta;2...</li>
+                        <li>Attach threads to the central ring, pass each thread over its respective frictionless pulley, and suspend suitable slotted weights F = mg at the free ends.</li>
+                        <li>Adjust the weights and pulley angles until the central ring is centered and stationary (achieving static equilibrium).</li>
+                        <li>Note down the hanging weights and their angles of inclination with respect to the X axis.</li>
+                        <li>Construct the Space Diagram and draw the Vector Polygon to a suitable scale. Verify that the polygon closes (or measure the graphical error of closure).</li>
+                        <li>Compute &Sigma;F<sub>x</sub>, &Sigma;F<sub>y</sub>, <br>Resultant R = &radic;<span style="border-top: 1px solid currentColor; padding-top: 1px;">(&Sigma;F<sub>x</sub>)<sup>2</sup> + (&Sigma;F<sub>y</sub>)<sup>2</sup></span>, and <br>direction &theta; = tan<sup>-1</sup>|&Sigma;F<sub>y</sub>/ &Sigma;F<sub>x</sub>| <br>analytically, then lock the observation to record up to 4 trials.</li>
+                    </ol>
+                </div>
+            </details>
+
+            <details class="lab-section">
+                <summary>4. Precautions</summary>
+                <div class="lab-content">
+                    <ul>
+                        <li>Ensure the Universal Force Table is strictly horizontal using a spirit level before taking readings.</li>
+                        <li>Check that all pulleys rotate freely with minimal friction so tension equals the suspended weight.</li>
+                        <li>Ensure the central ring does not touch the central pin when recording equilibrium positions.</li>
+                        <li>Avoid parallax error while reading pulley angles on the circular degree scale.</li>
+                        <li>Keep weights hanging still without swinging before locking an observation.</li>
+                    </ul>
+                </div>
+            </details>
+        </div>
+    </section>
+
+    <div class="action-buttons" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+        <a href="./exp1Simulation.html" style="text-decoration: none;"><button class="btn-primary">← Open Simulator</button></a>
+        <button class="btn-danger" id="clearAllBtn">Clear All</button>
+    </div>
+
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 90%;">Obs #</th>
+                    <th>Weights & Angles</th>
+                    <th>ΣF<sub>x</sub></th>
+                    <th>ΣF<sub>y</sub></th>
+                    <th>Resultant (R)</th>
+                    <th>Angle (θ)</th>
+                    <th style="width: 240px;">Graphs</th>
+                    <th style="width: 140px;">Actions</th>
+                </tr>
+            </thead>
+            <tbody id="obsTableBody"></tbody>
+        </table>
+    </div>
+
+    <!-- Calculation & Graph Modal -->
+    <div class="modal-backdrop" id="calcModal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h2 id="modalTitle">Calculations</h2>
+                <button id="closeModalBtn">✕</button>
+            </div>
+            <div id="modalBody"></div>
+        </div>
+    </div>
+
+    <script>
+        const STORAGE_KEY = "mechlab_exp1_observations";
+        const tbody = document.getElementById("obsTableBody");
+        const modal = document.getElementById("calcModal");
+        const modalTitle = document.getElementById("modalTitle");
+        const modalBody = document.getElementById("modalBody");
+
+        let activeModalIndex = null;
+        let modalShowComponents = false;
+
+        function getObservations() {
+            try {
+                return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+            } catch {
+                return [];
+            }
+        }
+
+        function saveObservations(list) {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+            renderTable();
+        }
+
+        function renderTable() {
+            const observations = getObservations();
+            tbody.innerHTML = "";
+
+            for (let i = 0; i < 4; i++) {
+                const obs = observations[i];
+                const tr = document.createElement("tr");
+
+                if (!obs) {
+                    tr.innerHTML = `
+                        <td colspan="8">
+                            <div class="empty-card">
+                                Slot #${i + 1} Empty — Lock an observation from the Live Simulator.
+                            </div>
+                        </td>
+                    `;
+                } else {
+                    const weightsHtml = obs.forces.map(f =>
+                        `<li><b>${f.label}:</b> ${f.mass}g ( ${f.angle}°) </li>`
+                    ).join("");
+
+                    const statusBadge = obs.balanced
+                        ? `<span class="badge badge-eq"> Balanced </span>`
+                        : `<span class="badge badge-un"> Unbalanced </span>`;
+
+                    tr.innerHTML = `
+                        <td colspan="8">
+                            <div class="obs-card">
+                                <div class="obs-header">
+                                    <span class="obs-title">Observation ${i + 1}</span>
+                                    <span class="obs-time">${obs.timestamp}</span>
+                                </div>
+
+                                <div class="obs-grid">
+                                    <div class="obs-data-group" style="grid-column: span 2;">
+                                        <label>Hanging Forces</label>
+                                        <ul class="force-list">${weightsHtml}</ul>
+                                    </div>
+                                    <div class="obs-data-group">
+                                        <label>Horizontal (ΣF<sub>x</sub>)</label>
+                                        <b>${obs.rx.toFixed(3)} N</b>
+                                    </div>
+                                    <div class="obs-data-group">
+                                        <label>Vertical (ΣF<sub>y</sub>)</label>
+                                        <b>${obs.ry.toFixed(3)} N</b>
+                                    </div>
+                                    <div class="obs-data-group">
+                                        <label>Resultant (R)</label>
+                                        <b>${obs.r.toFixed(3)} N </b> ${statusBadge}
+                                    </div>
+                                    <div class="obs-data-group">
+                                        <label>Angle (θ)</label>
+                                        <b>${obs.theta}</b>
+                                    </div>
+                                </div>
+
+                                <div class="graph-cell">
+                                    <div class="graph-thumb" onclick="openModal(${i})">
+                                        ${obs.spaceSvg}
+                                        <span class="graph-tag">Space</span>
+                                    </div>
+                                    <div class="graph-thumb" onclick="openModal(${i})">
+                                        ${obs.vectorSvg}
+                                        <span class="graph-tag">Vector</span>
+                                    </div>
+                                </div>
+
+                                <div style="display:flex; justify-content:space-evenly; margin-top:1.5vw;">
+                                    <button class="btn-calc" onclick="openModal(${i})">View Calculations</button>
+                                    <button class="btn-del-row" onclick="deleteObservation(${i})">Delete Trial</button>
+                                </div>
+                            </div>
+                        </td>
+                    `;
+                }
+                tbody.appendChild(tr);
+            }
+        }
+
+        function getNiceScale(rawNPerGrid) {
+            const niceSteps = [0.05, 0.1, 0.2, 0.25, 0.5, 1, 1.5, 2, 2.5, 3, 4, 5, 10, 20, 25, 50];
+            return niceSteps.find(step => step >= rawNPerGrid) || Math.ceil(rawNPerGrid);
+        }
+
+        function generateModalSpaceSvg(forces, showComponents) {
+            const colors = ["#2563eb", "#dc2626", "#16a34a", "#9333ea", "#ea580c", "#0891b2", "#be185d"];
+            const size = 500;
+            const mid = 250;
+            const gridPx = 25;
+            const maxRadiusPx = mid - 30;
+
+            let maxSpaceForce = 0.1;
+            forces.forEach(f => {
+                if (f.tension > maxSpaceForce) maxSpaceForce = f.tension;
+            });
+
+            const cleanNPerGrid = getNiceScale(maxSpaceForce / (maxRadiusPx / gridPx));
+            const unifiedPxPerN = gridPx / cleanNPerGrid;
+
+            let svgHtml = `
+                <svg class="diagram-svg" viewBox="0 0 500 500" style="width:100%; height:auto; border:1px solid #cbd5e1; border-radius:10px; background:#ffffff;">
+                <defs>
+                    <pattern id="minor-grid-space-modal" width="25" height="25" patternUnits="userSpaceOnUse">
+                        <path d="M 25 0 L 0 0 0 25" fill="none" stroke="#cbd5e1" stroke-width="1" />
+                    </pattern>
+                    <pattern id="major-grid-space-modal" width="50" height="50" patternUnits="userSpaceOnUse">
+                        <rect width="50" height="50" fill="url(#minor-grid-space-modal)" />
+                        <path d="M 50 0 L 0 0 0 50" fill="none" stroke="#cbd5e1" stroke-width="1" />
+                    </pattern>
+                    <marker id="arrow-component-modal" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0,1 L0,5 L6,3 z" fill="#475569" /></marker>
+            `;
+
+            forces.forEach((f, idx) => {
+                svgHtml += `<marker id="arrow-space-m-${idx}" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0,1 L0,5 L6,3 z" fill="${colors[idx % colors.length]}" /></marker>`;
+            });
+
+            svgHtml += `
+                </defs>
+                <rect width="500" height="500" fill="url(#major-grid-space-modal)" />
+                <line x1="0" y1="250" x2="500" y2="250" stroke="#64748b" stroke-width="1.5" />
+                <line x1="250" y1="0" x2="250" y2="500" stroke="#64748b" stroke-width="1.5" />
+                <circle cx="250" cy="250" r="3.5" fill="#334155" />
+                <text x="472" y="240" font-size="14" font-weight="bold" fill="#475569">+X</text>
+                <text x="258" y="18" font-size="14" font-weight="bold" fill="#475569">+Y</text>
+            `;
+
+            for (let pos = 50; pos < size - 25; pos += 50) {
+                if (pos === mid) continue;
+                const boxCount = Math.round((pos - mid) / gridPx);
+                const xVal = (boxCount * cleanNPerGrid).toFixed(cleanNPerGrid < 1 ? 1 : 0);
+                const yVal = (-boxCount * cleanNPerGrid).toFixed(cleanNPerGrid < 1 ? 1 : 0);
+                svgHtml += `<text x="${pos}" y="${mid + 15}" text-anchor="middle" font-size="13" fill="#64748b" font-weight="500">${xVal}</text>`;
+                svgHtml += `<text x="${mid - 8}" y="${pos + 4}" text-anchor="end" font-size="13" fill="#64748b" font-weight="500">${yVal}</text>`;
+            }
+            svgHtml += `<text x="14" y="${size - 14}" font-size="15" font-weight="bold" fill="#334155">Scale: 1 box = ${cleanNPerGrid} N</text>`;
+
+            forces.forEach((f, idx) => {
+                const rad = f.angle * Math.PI / 180;
+                const fx = f.tension * Math.cos(rad);
+                const fy = f.tension * Math.sin(rad);
+                const endX = mid + fx * unifiedPxPerN;
+                const endY = mid - fy * unifiedPxPerN;
+
+                let labelX = mid + ((f.tension * unifiedPxPerN) + 26) * Math.cos(rad);
+                let labelY = mid - ((f.tension * unifiedPxPerN) + 26) * Math.sin(rad);
+                if (Math.abs(Math.sin(rad)) < 0.15) labelY -= 16;
+                labelX = Math.max(60, Math.min(size - 60, labelX));
+
+                const color = colors[idx % colors.length];
+
+                svgHtml += `
+                    <line x1="${mid}" y1="${mid}" x2="${endX}" y2="${endY}" stroke="${color}" stroke-width="2.5" stroke-linecap="round" marker-end="url(#arrow-space-m-${idx})" />
+                    <text x="${labelX}" y="${labelY}" text-anchor="middle" dominant-baseline="middle" fill="${color}" font-size="16" font-weight="bold" paint-order="stroke" stroke="#fff" stroke-width="3.5px">${f.label} (${f.tension.toFixed(2)}N)</text>
+                `;
+
+                if (showComponents && Math.abs(fx) > 0.01 && Math.abs(fy) > 0.01) {
+                    const halfX = (mid + endX) / 2;
+                    const halfY = (mid + endY) / 2;
+                    const fixedLen = 35;
+
+                    const dirX = fx > 0 ? 1 : -1;
+                    const tipX = halfX + dirX * fixedLen;
+                    const lineEndX = tipX + (fx > 0 ? 2 : -2);
+                    const textX = halfX + (fx >= 0 ? 68 : -68);
+
+                    svgHtml += `
+                        <line x1="${halfX}" y1="${halfY}" x2="${lineEndX}" y2="${halfY}" stroke="#475569" stroke-width="1.5" marker-end="url(#arrow-component-modal)" />
+                        <text x="${textX}" y="${halfY}" text-anchor="middle" dominant-baseline="middle" font-size="12" fill="#1e293b" font-weight="bold" paint-order="stroke" stroke="#fff" stroke-width="3px">${fx.toFixed(2)}N</text>
+                    `;
+
+                    const dirY = fy > 0 ? -1 : 1;
+                    const tipY = halfY + dirY * fixedLen;
+                    const lineEndY = tipY + (fy > 0 ? -2 : +2);
+                    const textY = tipY + (fy >= 0 ? -12 : 16);
+
+                    svgHtml += `
+                        <line x1="${halfX}" y1="${halfY}" x2="${halfX}" y2="${lineEndY}" stroke="#475569" stroke-width="1.5" marker-end="url(#arrow-component-modal)" />
+                        <text x="${halfX + 16}" y="${textY}" text-anchor="${fx >= 0 ? 'start' : 'end'}" dominant-baseline="middle" font-size="12" fill="#1e293b" font-weight="bold" paint-order="stroke" stroke="#fff" stroke-width="3px">${fy.toFixed(2)}N</text>
+                    `;
+                }
+            });
+
+            svgHtml += `</svg>`;
+            return svgHtml;
+        }
+
+        function openModal(index) {
+            activeModalIndex = index;
+            modalShowComponents = false;
+            updateModalContent();
+            modal.classList.add("open");
+        }
+
+        function updateModalContent() {
+            if (activeModalIndex === null) return;
+            const obs = getObservations()[activeModalIndex];
+            if (!obs) return;
+
+            modalTitle.textContent = `Observation #${activeModalIndex + 1} Calculation`;
+
+            const tensionLines = obs.forces.map(f =>
+                `<div>• <b>${f.label}:</b> ${f.mass}g → T = ${(f.mass / 1000).toFixed(3)} × 9.81 = <b>${f.tension.toFixed(3)} N</b> ( ${f.angle}°)</div>`
+            ).join("");
+
+            const fxTerms = obs.forces.map(f => `${f.tension.toFixed(3)}·cos(${f.angle}°)`).join(" + ");
+            const fxValues = obs.forces.map(f => `(${f.fx >= 0 ? '+' : ''}${f.fx.toFixed(3)})`).join(" + ");
+
+            const fyTerms = obs.forces.map(f => `${f.tension.toFixed(3)}·sin(${f.angle}°)`).join(" + ");
+            const fyValues = obs.forces.map(f => `(${f.fy >= 0 ? '+' : ''}${f.fy.toFixed(3)})`).join(" + ");
+
+            const spaceDiagramHtml = generateModalSpaceSvg(obs.forces, modalShowComponents);
+
+            modalBody.innerHTML = `
+                <div class="calc-step">
+                    <h4>1. Tension Conversion (T = m·g)</h4>
+                    ${tensionLines}
+                </div>
+                <div class="calc-step">
+                    <h4>2. Horizontal Summation (ΣF<sub>x</sub> = Σ T·cos θ)</h4>
+                    <div>ΣF<sub>x</sub> = ${fxTerms}</div>
+                    <div>ΣF<sub>x</sub> = ${fxValues} = <b>${obs.rx.toFixed(3)} N</b></div>
+                </div>
+                <div class="calc-step">
+                    <h4>3. Vertical Summation (ΣF<sub>y</sub> = Σ T·sin θ)</h4>
+                    <div>ΣF<sub>y</sub> = ${fyTerms}</div>
+                    <div>ΣF<sub>y</sub> = ${fyValues} = <b>${obs.ry.toFixed(3)} N</b></div>
+                </div>
+                <div class="calc-step">
+                    <h4>4. Resultant Force & Direction</h4>
+                    <div>R = √(ΣF<sub>x</sub>² + ΣF<sub>y</sub>²) = √((${obs.rx.toFixed(3)})² + (${obs.ry.toFixed(3)})²) = <b>${obs.r.toFixed(3)} N</b></div>
+                    <div style="margin-top: 6px;">θ = tan<sup>-1</sup>|(&Sigma;F<sub>y</sub> / &Sigma;F<sub>x</sub>)| = tan<sup>-1</sup>|(${obs.ry.toFixed(3)} / ${obs.rx.toFixed(3)})| = <b>${obs.theta}</b></div>
+                </div>
+                <div class="modal-graphs">
+                    <div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                            <p style="font-weight:bold; font-size:13px; margin:0;">Space Diagram</p>
+                            <label style="font-size: 12px; font-weight: bold; display: flex; align-items: center; gap: 4px; cursor: pointer; color: #334155;">
+                                <input type="checkbox" id="modalComponentToggle" ${modalShowComponents ? 'checked' : ''} style="cursor: pointer; width: 15px; height: 15px;"> 
+                                Show Components
+                            </label>
+                        </div>
+                        ${spaceDiagramHtml}
+                    </div>
+                    <div>
+                        <p style="text-align:center; font-weight:bold; font-size:13px; margin:0 0 6px 0;">Vector Polygon</p>
+                        ${obs.vectorSvg}
+                    </div>
+                </div>
+            `;
+
+            const toggleCheckbox = document.getElementById("modalComponentToggle");
+            if (toggleCheckbox) {
+                toggleCheckbox.addEventListener("change", (e) => {
+                    modalShowComponents = e.target.checked;
+                    updateModalContent();
+                });
+            }
+        }
+
+        function deleteObservation(index) {
+            if (!confirm(`Delete Observation #${index + 1}?`)) return;
+            const list = getObservations();
+            list.splice(index, 1);
+            saveObservations(list);
+        }
+
+        document.getElementById("clearAllBtn").addEventListener("click", () => {
+            if (!confirm("Clear all locked observations?")) return;
+            localStorage.removeItem(STORAGE_KEY);
+            renderTable();
+        });
+
+        document.getElementById("closeModalBtn").addEventListener("click", () => {
+            modal.classList.remove("open");
+            activeModalIndex = null;
+        });
+
+        modal.addEventListener("click", (e) => {
+            if (e.target === modal) {
+                modal.classList.remove("open");
+                activeModalIndex = null;
+            }
+        });
+
+        renderTable();
+    </script>
 </body>
 </html>

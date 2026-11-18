@@ -326,7 +326,7 @@ function calculate() {
     const status = document.getElementById("status");
 
     status.textContent = balanced
-        ? "✓ Central ring is balanced! Equilibrium achieved."
+        ? "✓ Central ring balanced! Equilibrium achieved."
         : "✗ Ring is not balanced. Adjust weights or angles.";
 
     status.style.color = balanced ? "#15803d" : "#dc2626";
@@ -394,6 +394,11 @@ document.getElementById("removeForce").addEventListener("click", () => {
 // Calculate button
 document.getElementById("calculate").addEventListener("click", calculate);
 
+// Listen to component toggle checkbox changes
+document.getElementById("toggle-components")?.addEventListener("change", () => {
+    calculate();
+});
+
 // Initial rendering
 renderInputs();
 calculate();
@@ -421,7 +426,7 @@ function buildDynamicAxes(size, mid, gridPx, scaleNPerGrid) {
 
     html += `
         <text x="12" y="${size - 12}" class="scale-label">
-            Scale: 1 box = ${scaleNPerGrid} N (20×20 grid)
+            Scale: 1 box = ${scaleNPerGrid} N
         </text>
     `;
     return html;
@@ -463,14 +468,19 @@ function drawDiagrams(rx, ry, resultant) {
     let spaceHTML = axesHTML;
     let vectorHTML = axesHTML;
 
-    // 1. SPACE DIAGRAM (With horizontal-axis collision avoidance)
+    const showComponents = document.getElementById("toggle-components")?.checked || false;
+
+    // 1. SPACE DIAGRAM (With horizontal-axis collision avoidance & components toggle)
     forces.forEach((force, index) => {
         const tension = (force.mass / 1000) * g;
         if (tension <= 0) return;
 
         const rad = radians(force.angle);
-        const endX = mid + (tension * Math.cos(rad)) * unifiedPxPerN;
-        const endY = mid - (tension * Math.sin(rad)) * unifiedPxPerN;
+        const fx = tension * Math.cos(rad);
+        const fy = tension * Math.sin(rad);
+
+        const endX = mid + fx * unifiedPxPerN;
+        const endY = mid - fy * unifiedPxPerN;
 
         let labelX = mid + ((tension * unifiedPxPerN) + 22) * Math.cos(rad);
         let labelY = mid - ((tension * unifiedPxPerN) + 22) * Math.sin(rad);
@@ -491,6 +501,44 @@ function drawDiagrams(rx, ry, resultant) {
                 F${index + 1} (${tension.toFixed(2)}N)
             </text>
         `;
+
+        // Render fixed-length Horizontal and Vertical Component Vectors with clean text placement at arrow tips
+        if (showComponents && Math.abs(fx) > 0.01 && Math.abs(fy) > 0.01) {
+            const halfX = (mid + endX) / 2;
+            const halfY = (mid + endY) / 2;
+            const fixedLen = 32;
+
+            const dirX = fx > 0 ? 1 : -1;
+            const tipX = halfX + dirX * fixedLen;
+            const lineEndX = tipX + (fx > 0 ? 2 : -2);
+
+            const textX = halfX + (fx >= 0 ? 65 : -65);
+
+            spaceHTML += `
+                <line x1="${halfX}" y1="${halfY}" x2="${lineEndX}" y2="${halfY}"
+                      stroke="#475569" stroke-width="1"
+                      marker-end="url(#arrow-component)" />
+                <text x="${textX}" y="${halfY}" 
+                      text-anchor="middle" dominant-baseline="middle" font-size="9" fill="#334155" class="vector-text">
+                    ${fx.toFixed(2)}N
+                </text>
+            `;
+
+            const dirY = fy > 0 ? -1 : 1;
+            const tipY = halfY + dirY * fixedLen;
+            const lineEndY = tipY + (fy > 0 ? -2 : +2);
+            const textY = tipY + (fy >= 0? -10 : 15);
+
+            spaceHTML += `
+                <line x1="${halfX}" y1="${halfY}" x2="${halfX}" y2="${lineEndY}"
+                      stroke="#475569" stroke-width="1"
+                      marker-end="url(#arrow-component)" />
+                <text x="${halfX+15}" y="${textY}"
+                      text-anchor="${fx >= 0 ? 'start' : 'end'}" dominant-baseline="middle" font-size="9" fill="#334155" class="vector-text">
+                    ${fy.toFixed(2)}N
+                </text>
+            `;
+        }
     });
 
     // 2. VECTOR DIAGRAM
@@ -505,10 +553,10 @@ function drawDiagrams(rx, ry, resultant) {
         const nextX = currX + (tension * Math.cos(rad)) * unifiedPxPerN;
         const nextY = currY - (tension * Math.sin(rad)) * unifiedPxPerN;
 
-        let midX=(currX +nextX)/2+8;
-        let midY=(currY +nextY)/2-8;
+        let midX = (currX + nextX) / 2 + 8;
+        let midY = (currY + nextY) / 2 - 8;
 
-        //Lift label, if it is on X-axis
+        // Lift label, if it is on X-axis
         if (Math.abs(currY - mid) < 5 && Math.abs(nextY - mid) < 5) {
             midY -= 6;
         }
@@ -554,3 +602,102 @@ function drawDiagrams(rx, ry, resultant) {
     spaceLayer.innerHTML = spaceHTML;
     vectorLayer.innerHTML = vectorHTML;
 }
+
+
+
+
+// LOCK & STORE OBSERVATIONS (MAX 4)
+const STORAGE_KEY = "mechlab_exp1_observations";
+const lockBtn = document.getElementById("lockObservation");
+const obsCountSpan = document.getElementById("obsCount");
+
+function getSavedObservations() {
+    try {
+        return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+    } catch {
+        return [];
+    }
+}
+
+function updateLockButtonUI() {
+    const saved = getSavedObservations();
+    if (obsCountSpan) obsCountSpan.textContent = saved.length;
+    if (lockBtn) {
+        if (saved.length >= 4) {
+            lockBtn.disabled = true;
+            lockBtn.style.background = "#94a3b8";
+            lockBtn.style.cursor = "not-allowed";
+            lockBtn.innerHTML = `All Observations are taken (4/4)`;
+        } else {
+            lockBtn.disabled = false;
+            lockBtn.style.background = "#15803d";
+            lockBtn.style.cursor = "pointer";
+            lockBtn.innerHTML = `Lock & Save Observation (<span id="obsCount">${saved.length}</span>/4)`;
+        }
+    }
+}
+
+if (lockBtn) {
+    lockBtn.addEventListener("click", () => {
+        const saved = getSavedObservations();
+        if (saved.length >= 4) {
+            alert("Maximum of 4 observations already locked. Clear a slot in the Observation Table first.");
+            return;
+        }
+
+        // Compute exact values & breakdown for storage
+        let rx = 0;
+        let ry = 0;
+        const forceDetails = forces.map((f, idx) => {
+            const massKg = f.mass / 1000;
+            const tension = massKg * g;
+            const rad = radians(f.angle);
+            const fx = tension * Math.cos(rad);
+            const fy = tension * Math.sin(rad);
+            rx += fx;
+            ry += fy;
+            return {
+                label: `F${idx + 1}`,
+                mass: f.mass,
+                angle: f.angle,
+                tension: Number(tension.toFixed(4)),
+                fx: Number(fx.toFixed(4)),
+                fy: Number(fy.toFixed(4))
+            };
+        });
+
+        const resultant = Math.sqrt(rx * rx + ry * ry);
+        const theta = resultant < 0.01
+            ? "Undefined"
+            : ((Math.atan2(ry, rx) * 180 / Math.PI + 360) % 360).toFixed(2) + "°";
+
+        // Capture full standalone SVG markup (including <defs> markers & grid patterns)
+        const spaceSvg = document.getElementById("space-diagram").outerHTML;
+        const vectorSvg = document.getElementById("vector-diagram").outerHTML;
+
+        const observation = {
+            id: Date.now(),
+            timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            forces: forceDetails,
+            rx: Number(rx.toFixed(3)),
+            ry: Number(ry.toFixed(3)),
+            r: Number(resultant.toFixed(3)),
+            theta: theta,
+            balanced: resultant < 0.06,
+            spaceSvg: spaceSvg,
+            vectorSvg: vectorSvg
+        };
+
+        saved.push(observation);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(saved));
+        updateLockButtonUI();
+
+        // Brief visual feedback
+        const originalBg = lockBtn.style.background;
+        lockBtn.textContent = "✓ Saved!";
+        setTimeout(updateLockButtonUI, 900);
+    });
+}
+
+// Initialize counter on page load
+updateLockButtonUI();

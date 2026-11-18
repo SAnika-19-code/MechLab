@@ -12,7 +12,7 @@ h1 {
 }
 
 p:first-of-type{
-    margin: 1vw;
+    margin: 1vw 0;
     text-align: center;
 }
 
@@ -100,18 +100,33 @@ button {
 
 #status {
     font-weight: bold;
-    margin-top: 10px;
+    font-size: 14px;
+    padding: 0;
+    width: 100%;
 }
 
-@media(max-width: 750px) {
-    body {
-        padding: 10px;
-    }
-
-    .layout {
-        grid-template-columns: 1fr;
-    }
+#lock{
+    margin: 0;
+    margin-bottom: 2vw; 
+    display: flex; 
+    gap: 2vw; 
+    align-items: center; 
+    flex-wrap: wrap;
+    justify-content: center;
 }
+
+#lockObservation{
+    background: #15803d; 
+    color: white; 
+    margin: 0;
+}
+
+#viewObservation{
+    background: #e2e8f0;
+    color: #1e293b;
+    margin: 0;
+}
+
 
 
 /* Custom number controls */
@@ -160,6 +175,14 @@ button {
 }
 
 @media(max-width: 750px) {
+    body {
+        padding: 10px;
+    }
+
+    .layout {
+        grid-template-columns: 1fr;
+    }
+
     .force-row {
         grid-template-columns: 15px minmax(0, 1fr) minmax(0, 1fr);
         gap: 2.8vw;
@@ -169,8 +192,9 @@ button {
     }
 
     .force-row input{
-        height: 3vh;
+        height: 2.5vh;
         width: 20vw;
+        font-size: 14px;
     }
 
     .number-control {
@@ -207,14 +231,6 @@ button {
 .pulley-handle:active {
     cursor: grabbing;
 }
-
-
-
-
-
-
-
-
 
 
 

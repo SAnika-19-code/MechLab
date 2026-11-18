@@ -77,10 +77,24 @@
                 <div>Resultant angle: <b id="theta">—</b></div>
                 <p id="status">Adjust the weights to achieve equilibrium.</p>
             </div>
+            <div id="lock">
+                <button id="lockObservation">Lock & Save Observation (<span id="obsCount">0</span>/4)</button>
+                <a href="exp1.html" style="text-decoration: none;">
+                    <button id="viewObservation">
+                        View Observation Table →
+                    </button>
+                </a>
+            </div>
         </section>
 
         <div class="panel">
-            <h3>Space Diagram (Concurrent Forces)</h3>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 10px;">
+                <h3 style="margin: 0;">Space Diagram (Concurrent Forces)</h3>
+                <label style="font-size: 13px; font-weight: bold; display: flex; align-items: center; gap: 6px; cursor: pointer; color: #334155;">
+                    <input type="checkbox" id="toggle-components" style="cursor: pointer; width: 16px; height: 16px;"> 
+                    Show Components (F cos &theta;, <i>F</i> sin &theta;)
+                </label>
+            </div>
             <svg id="space-diagram" class="diagram-svg" viewBox="0 0 500 500">
             <defs>
                 <!-- 25px minor grid + 50px major grid pattern -->
@@ -91,6 +105,9 @@
                 <rect width="50" height="50" fill="url(#minor-grid-space)" />
                 <path d="M 50 0 L 0 0 0 50" fill="none" class="grid-major" />
                 </pattern>
+
+                <!-- Component Arrow Marker -->
+                <marker id="arrow-component" markerWidth="5" markerHeight="5" refX="4.5" refY="2.5" orient="auto"><path d="M0,0.5 L0,4.5 L5,2.5 z" fill="#475569" /></marker>
 
                 <!-- Colored Arrow Markers -->
                 <marker id="arrow-space-0" markerWidth="5" markerHeight="5" refX="4.5" refY="2.5" orient="auto"><path d="M0,0.5 L0,4.5 L5,2.5 z" fill="#2563eb" /></marker>
